@@ -1,0 +1,19 @@
+{
+  "name": "chat-en-tiempo-real",
+  "version": "1.0.0",
+  "description": "chat en tiempo real",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gabriel Pino",
+  "license": "ISC",
+  "devDependencies": {
+    "express": "^5.2.1"
+  },
+  "dependencies": {
+    "morgan": "1.12.0",
+    "socket.io": "4.8.3"
+  }
+}
