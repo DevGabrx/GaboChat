@@ -26,6 +26,13 @@ io.on("connection",(socket)=>{
   socket.on('disconnect',()=>{
     console.log("El cliente se ha desconectado")
   })
+
+  //socket.ion recibe el mensaje del cliente por el formulario
+  //io.emit("Emite el mensaje funciona como broadcast porque hace un send a todos los usuarios correspondientes")
+  socket.on('chat message',(msj)=>{
+    //
+    io.emit("chat message" , msj)
+  })
 })
 
 app.use(logger('dev'))

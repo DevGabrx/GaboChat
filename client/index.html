@@ -5,11 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GaboChat</title>
 
+
+
+    <!-- Donde se hace la conexion cliente-servidor , es decir como sabe index.js lo que le llega desde index.html -->
     <script type="module">
 
     import { io } from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js'
 
     const socket = io()
+
+    const form = document.getElementById('form')
+    const input = document.getElementById('input')
+
+    
+    const message = document.getElementById('messages')
+
+
+
+    //que es insertAdjacentHTML
+    socket.on('chat message',(msj)=>{
+      const item = `<li>${msj}</li>`
+      message.insertAdjacentHTML('beforeend',item)
+    })
+
+    form.addEventListener('submit',(e)=>{
+
+      //que pasa si mo se coloca el prevent default
+      e.preventDefault()
+
+      if(input.value){
+         //envia mensaje al servidor
+          socket.emit('chat message' , input.value)
+          input.value =''
+      }
+    })
+    
 
     </script>
     
