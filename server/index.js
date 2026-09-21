@@ -27,7 +27,7 @@ const db = createClient({
 })
 
 await db.execute(
-  `CREATE TABLE messages(
+  `CREATE TABLE IF NOT EXISTS messages(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   context TEXT
   )`
@@ -38,7 +38,7 @@ const server = createServer(app)
 //Añade comunicacion en tiempo real
 const io = new Server(server)
 
-io.on("connection",(socket)=>{
+io.on("connection",async (socket)=>{
   console.log("El cliente se ha conectado!!!!")
 
 
@@ -46,7 +46,7 @@ io.on("connection",(socket)=>{
     console.log("El cliente se ha desconectado")
   })
 
-  //socket.ion recibe el mensaje del cliente por el formulario
+  //socket.on recibe el mensaje del cliente por el formulario
   //io.emit("Emite el mensaje funciona como broadcast porque hace un send a todos los usuarios correspondientes")
   socket.on('chat message',async (msj)=>{
     //
@@ -57,7 +57,7 @@ io.on("connection",(socket)=>{
     try {
       
       result = await  db.execute({
-        sql : `INSERT INTO messages(conext) VALUES (:msg)`, // no poner literalmente la variable msj porque nos podrian hacer un sql injection
+        sql : `INSERT INTO messages(context) VALUES (:msj)`, // no poner literalmente la variable msj porque nos podrian hacer un sql injection
         args:{msj} //con los args evitamos sql injection 
       })
 
@@ -66,10 +66,33 @@ io.on("connection",(socket)=>{
       console.error(error)
       return
     }
-
-
+  
+    //                           Ultimo ID y volverlo a String 
     io.emit("chat message" ,msj, result.lastInsertRowid.toString())
   })
+
+  console.log("Informacion que viene desde la request")
+  console.log(socket.handshake.auth.serverOffset)
+
+
+  if(!socket.recovered){
+    try { 
+      const results = await db.execute({
+        sql:"SELECT id,context FROM messages WHERE id > ?" ,
+        args:[socket.handshake.auth.serverOffset ?? 0]
+      })
+
+
+      //Investigar Para Que Sirve HASTA AQUI QUEDE 21/09/2026
+      // results.rows.forEach(row =>{
+      //   socket.emit('chat message', row.content, row.id.toString())
+      // })
+
+
+    }catch(error){
+      console.log(error)
+    }
+  }
 })
 
 app.use(logger('dev'))

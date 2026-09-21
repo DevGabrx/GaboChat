@@ -12,7 +12,13 @@
 
     import { io } from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js'
 
-    const socket = io()
+    const socket = io({
+      auth : { // Auth : Informacion de la  request
+        aplicacion : 'GaboChat',
+        username :"Gabodev",
+        serverOffset : 0,
+      }
+    })
 
     const form = document.getElementById('form')
     const input = document.getElementById('input')
@@ -21,9 +27,10 @@
 
 
     //que es insertAdjacentHTML
-    socket.on('chat message',(msj)=>{
+    socket.on('chat message',(msj,serverOffset)=>{
       const item = `<li>${msj}</li>`
       message.insertAdjacentHTML('beforeend',item)
+      socket.auth.serverOffset = serverOffset
     })
 
     form.addEventListener('submit',(e)=>{
